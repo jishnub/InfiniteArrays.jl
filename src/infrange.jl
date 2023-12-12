@@ -579,3 +579,8 @@ permutedims(D::Diagonal{<:Any,<:InfRanges}) = D
 copy(D::Diagonal{<:Any,<:InfRanges}) = D
 broadcasted(::LazyArrayStyle{2}, ::typeof(*), a::Number, D::Diagonal{<:Any,<:InfRanges}) = a*D
 broadcasted(::LazyArrayStyle{2}, ::typeof(*), D::Diagonal{<:Any,<:InfRanges}, a::Number) = D*a
+
+# avoid creating infinite arrays
+function Base.setindex!(::CachedArray{<:Any,N,<:StridedArray}, ::Any, inds::Vararg{Union{Integer, InfRanges},N}) where {N}
+    throw(ArgumentError("cannot write to an infinite destination $inds"))
+end
